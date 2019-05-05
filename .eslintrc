@@ -8,8 +8,7 @@
     },
     "sourceType": "module"
   },
-  "plugins": ["react"],
-  "extends": ["standard", "standard-react"],
+  "extends": ["standard"],
   "env": {
     "browser": true,
     "amd": true,
