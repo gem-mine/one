@@ -1,7 +1,29 @@
-const One = function (options) {
-  const { plugins } = options || {}
+const EventEmitter = require('eventemitter3')
 
-  this._plugins = {}
+const One = function (options) {
+  const { plugins, data } = options || {}
+  const _data = Object.assign({}, data) // 缓存共享数据
+
+  // 插件集
+  Object.defineProperty(this, '_plugins', {
+    value: {}
+  })
+
+  // 事件机制
+  this.event = new EventEmitter()
+
+  // 共享数据的操作
+  this.data = {
+    get: key => {
+      return _data[key]
+    },
+    set: (key, val) => {
+      _data[key] = val
+    },
+    del: key => {
+      delete _data[key]
+    }
+  }
 
   if (plugins) {
     for (const key in plugins) {
@@ -15,24 +37,19 @@ const One = function (options) {
   }
 }
 
-/**
- * 插件只是进行了 bind
- */
-One.prototype.addPlugin = function (plugin) {
-  return plugin.bind(this)
-}
-
-/**
- * 直接运行插件，用于 one 已经被初始化的情况
- */
-One.prototype.runPlugin = function (key, plugin) {
-  _detect(key, plugin, this._plugins)
-
-  plugin.call(this)
-}
-
 // 提供简写，方便插件注册
 One.fn = One.prototype
+
+One.fn.addPlugin = function (plugin) {
+  return plugin.bind(this)
+}
+One.fn.runPlugin = function (key, plugin) {
+  _detect(key, plugin, this._plugins)
+  plugin.call(this)
+}
+One.fn.getPlugin = function (key) {
+  return this._plugins[key]
+}
 
 function _detect(key, plugin, plugins) {
   if (plugins[key]) {

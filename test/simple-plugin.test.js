@@ -1,35 +1,35 @@
 const One = require('../src')
-const xxPlugin = require('./plugin-xx')
+const simplePlugin = require('./plugin-simple')
 const assert = require('assert')
 
 describe('自定义插件', () => {
   it('在初始化加载', () => {
-    const xx = xxPlugin({
+    const s = simplePlugin({
       name: 'cow'
     })
 
     const one = new One({
       plugins: {
-        hehe: xx
+        hehe: s
       }
     })
 
-    assert.equal(one._plugins.hehe, xx)
-    assert.equal(one.xx.key, 'xxxxx')
-    assert.equal(one.xx.name, 'cow')
+    assert.equal(one.getPlugin('hehe'), s)
+    assert.equal(one.simple.key, 'xxxxx')
+    assert.equal(one.simple.name, 'cow')
   })
 
   it('在运行时加载', () => {
-    const yy = xxPlugin({
+    const y = simplePlugin({
       name: 'beef'
     })
 
     const one = new One()
 
-    one.runPlugin('haha', yy)
+    one.runPlugin('haha', y)
 
-    assert.equal(one._plugins.haha, yy)
-    assert.equal(one.xx.key, 'xxxxx')
-    assert.equal(one.xx.name, 'beef')
+    assert.equal(one.getPlugin('haha'), y)
+    assert.equal(one.simple.key, 'xxxxx')
+    assert.equal(one.simple.name, 'beef')
   })
 })
