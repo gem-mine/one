@@ -1,6 +1,6 @@
 const One = require('../src')
 
-module.exports = One.fn.addPlugin(function (count) {
+module.exports = function (count) {
   if (typeof count === 'number') {
     this.data.set('count', count)
   }
@@ -22,4 +22,4 @@ module.exports = One.fn.addPlugin(function (count) {
       this
     )
   }
-})
+}

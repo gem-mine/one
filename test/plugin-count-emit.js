@@ -1,6 +1,6 @@
 const One = require('../src')
 
-module.exports = One.fn.addPlugin(function () {
+module.exports = function () {
   return function () {
     this.count = {
       add: n => {
@@ -11,4 +11,4 @@ module.exports = One.fn.addPlugin(function () {
       }
     }
   }
-})
+}
