@@ -5,32 +5,31 @@ const One = function (options) {
   const _data = Object.assign({}, data) // 缓存共享数据
 
   // 插件集
-  Object.defineProperty(this, '_plugins', {
-    value: {}
-  })
-
+  _private(this, '_plugins', {})
   // 事件机制
-  this.event = new EventEmitter()
-
+  _private(this, 'event', new EventEmitter())
   // 共享数据的操作
-  this.data = {
-    get: key => {
-      return _data[key]
-    },
-    set: (key, val) => {
-      _data[key] = val
-    },
-    del: key => {
-      delete _data[key]
-    }
-  }
+  _private(
+    this,
+    'data',
+    Object.freeze({
+      get: key => {
+        return _data[key]
+      },
+      set: (key, val) => {
+        _data[key] = val
+      },
+      del: key => {
+        delete _data[key]
+      }
+    })
+  )
 
   if (plugins) {
     for (const key in plugins) {
       if (plugins.hasOwnProperty(key)) {
         const plugin = plugins[key]
         _detect(key, plugin, this._plugins)
-
         plugin.call(this)
       }
     }
@@ -56,6 +55,17 @@ function _detect(key, plugin, plugins) {
     throw new Error(`插件名称 ${key} 已经被注册，请更换`)
   }
   plugins[key] = plugin
+}
+
+function _private(obj, key, value) {
+  return Object.defineProperty(obj, key, {
+    get() {
+      return value
+    },
+    set() {
+      throw new Error(`${key} 是受保护属性，禁止重写`)
+    }
+  })
 }
 
 module.exports = One
